@@ -98,7 +98,7 @@ h1, h2, h3, p, fieldset {
 /*header*/
 
 .header {
-  padding: 32px 0;
+  padding: 36px 0;
 }
 .header__container {
   display: flex;
@@ -113,6 +113,8 @@ h1, h2, h3, p, fieldset {
 
 .header__btn-order {
   margin-right: 32px;
+  width: 24px;
+  height: 24px;
 }
 
 .header__btn {
@@ -132,14 +134,15 @@ h1, h2, h3, p, fieldset {
 
 .hero__cups {
   display: flex;
+  align-items: flex-end;
   gap: 20px; 
   padding-top: 270px;
 }
 
 .hero__cup {
   position: relative;
-  width: 380px;
-  height: 382px; 
+  width:100%;
+  aspect-ratio: 1/1;
   border-radius: 24px;
 }
 
@@ -148,6 +151,7 @@ h1, h2, h3, p, fieldset {
 }
 
 .hero__cup_orange {
+  align-self: flex-start;
   background-color: #FFB72A;
   margin-top: -70px;
 
@@ -159,7 +163,8 @@ h1, h2, h3, p, fieldset {
 
 .hero__img {
   position: absolute;
-  bottom: 50px;
+  width: 55%;
+  bottom: 13%;
   left: 50%;
   transform: translateX(-50%);
 }
@@ -204,15 +209,16 @@ h1, h2, h3, p, fieldset {
 
 .cocktail__text {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2px;
+  margin-bottom: 10px;
+  gap: 2px 5px;
 }
 
 .cocktail__title {
   font-weight: 400;
-  margin-right: 5px;
-  font-size: 18px;
+  font-size: inherit;
 }
 
 .cocktail_price {
@@ -220,17 +226,17 @@ h1, h2, h3, p, fieldset {
 }
 
 .cocktail__size {
+  flex: 0 0 100%;
   font-weight: 600;
   color: #c1c1c1;
   font-size: 12px;
-  align-self: flex-end;
-  margin-bottom: 10px;
+  text-align: end;
+  
 }
 
 .cocktail__btn {
   margin-top: auto;
 }
-
 
 
 /*footer*/
@@ -258,6 +264,7 @@ h1, h2, h3, p, fieldset {
 .footer__developer {
   grid-area: developer;
   justify-self: end;
+  min-width: 230px;
 }
 
 .footer__developer-item {
@@ -268,6 +275,187 @@ h1, h2, h3, p, fieldset {
   margin-bottom: 0;
 }
 
-.footer__developer-link {
+/* .footer__developer-link {
   
+} */
+
+@media (max-width: 1240px) {
+  body {
+    background-image: url('../img/bg_laptop.svg');
+  }
+
+  .container {
+    --width: 880px;
+  }
+
+  .hero {
+    padding-bottom: 30px;
+  }
+
+  .hero__title {
+    max-width: 680px;
+    font-size: 64px;
+  }
+
+  .hero__cups {
+    padding-top: 216px;
+  }
+
+  .hero__cup_orange {
+    margin-top: -50px;
+  }
+
+  .goods__list {
+    grid-template-columns: repeat(3, 280px);
+  }
+}
+
+@media (max-width: 940px) {
+  body {
+    background-image: url('../img/bg_tablet.svg');
+    font-size: 14px;
+  }
+
+  .container {
+    --width: 608px;
+    --padding: 15px;
+  }
+
+  .btn {
+    padding: 8px 20px;
+    box-shadow: 0px 2px 10px 0px #FA5A5A;
+  }
+
+  .header {
+    padding: 34px 0 50px;
+  }
+
+  .header__btn-order {
+    margin-right: 24px;
+  }
+
+  .hero {
+    padding-bottom: 46px;
+  }
+
+  .hero__title {
+    font-size: 44px;
+    max-width: 468px;
+  }
+
+  .hero__cups {
+    padding-top: 112px;
+    gap: 13px;
+  }
+
+  .hero__cup {
+    border-radius: 12px;
+  }
+
+  .hero__img {
+    bottom: 10%;
+  }
+
+  .goods {
+    padding-top: 40px;
+    padding-bottom: 50px;
+  }
+
+  .goods__title {
+    margin-bottom: 16px;
+    font-size: 24px;
+  }
+
+  .goods__list {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+  }
+  
+  .cocktail {
+    border-radius: 12px;
+    padding: 8px;
+  }
+
+  .cocktail__img {
+    border-radius: 12px;
+    margin-bottom: 8px;
+  }
+
+  .cocktail__content {
+    padding: 0;
+  }
+
+  .cocktail__text {
+    row-gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .cocktail__title {
+    flex: 0 0 100%;
+  }
+
+  .cocktail__size {
+    flex: auto;
+  }
+
+  .footer {
+    padding-bottom: 24px;
+  }
+
+  .footer__container {
+    gap: 24px;
+  }
+
+  .footer__developer-item {
+    margin-bottom: 6px;
+  }
+}
+
+@media (max-width: 640px) {
+  body {
+    background-image: url('../img/bg-mobile.svg');
+  }
+
+  .header {
+    padding: 31px 0;
+  }
+
+  .header__btn {
+    display: none;
+  }
+
+  .header__btn-order {
+    margin-right: 0;
+  }
+
+  .hero {
+    padding-top: 0;
+    padding-bottom: 120px;
+  }
+
+  .hero__title {
+    font-size: 36px;
+  }
+
+  .hero__cups {
+    display: none;
+  }
+
+  .goods {
+    padding-top: 40px;
+    padding-bottom: 30px;
+  }
+
+  .goods__list {
+    gap: 10px;
+  }
+
+  .footer__logo {
+    width: 120px;
+  }
+
+  .footer__container {
+    grid-template-areas: "logo" "copyright" "developer";
+    gap: 20px;
+  }
 }
