@@ -230,8 +230,7 @@ h1, h2, h3, p, fieldset {
   font-weight: 600;
   color: #c1c1c1;
   font-size: 12px;
-  text-align: end;
-  
+  text-align: end;  
 }
 
 .cocktail__btn {
@@ -275,9 +274,140 @@ h1, h2, h3, p, fieldset {
   margin-bottom: 0;
 }
 
-/* .footer__developer-link {
+.footer__developer-link {
   
-} */
+}
+
+/*модальное окно*/
+.modal {
+  position: fixed;
+  inset: 0; /*top 0, right 0, bottom 0, right 0*/
+  background-color: rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  padding: 20px;
+  overflow-y: auto; /*для скрола*/
+  display: none;
+}
+
+.modai__main {/*отвечает за центрование модалки*/
+  margin: auto;
+  cursor: default; /*что бы на модалке небыло курсора*/
+  width: 100%;
+  max-width: 780px;
+}
+
+.order {
+  padding: 40px 60px;
+  border-radius: 24px;
+  background-color: #F8E8E2;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+.order__title {
+  margin-bottom: 40px;
+  font-size: 44px;
+  font-weight: 900;  
+}
+
+.order__list {
+  margin-bottom: 40px;
+}
+
+.order__item {
+  border-top: 1px solid #fff;
+  padding-top: 10px;
+  padding-bottom: 16px;
+  display: grid;
+  grid-template-columns: 70px 1fr min-content;
+  gap: 12px;
+  grid-template-areas: 
+    "image info delete"
+    "image info price";
+}
+
+.order__item:last-child {
+  border-bottom: 1px solid #fff;
+  
+}
+
+.order__img {
+  max-width: 100%;
+  grid-area: image;
+}
+
+.order__info {
+  grid-area: info;
+}
+
+.order__name {
+  font-weight: 400;
+  font-size: inherit;
+  margin-bottom: 8px;
+}
+
+.order__topping-item {
+  margin-bottom: 8px;
+  color: #D5B4A8;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.order__topping-item:last-child {
+  margin-bottom: 0;
+}
+
+.order__item-delet {
+  grid-area: delete;
+  width: 24px;
+  height: 24px;
+  background-image: url('../img/delete.svg');
+  justify-self: end;
+}
+
+.order__item-price {
+  grid-area: price;
+  justify-self: end;
+  align-self: end;
+}
+
+.order__price {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 40px;
+}
+
+.order__price-title {
+  font-weight: 600;
+}
+
+.order__total-price {
+  font-weight: 600;
+}
+
+.order__form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px 20px;
+}
+
+.order__label {
+  width: 100%;
+}
+
+.order__input {
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 8px;
+  background-color: #fff;
+  border: none;
+}
+
+.order__submit {
+  justify-self: end;
+  grid-column: 2/3;
+}
+
+
 
 @media (max-width: 1240px) {
   body {
