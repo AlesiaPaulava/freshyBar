@@ -217,7 +217,7 @@
               </label>
 
               <label class="make__label radio">
-                <input class="radio__input" type="radio" name="cup" value="Пластиковый">Пластиковый
+                <input class="radio__input" type="radio" checked name="cup" value="Пластиковый">Пластиковый
                 <span>(+0 ₽)</span>
               </label>
             </fieldset>
@@ -227,8 +227,8 @@
             <button class="btn make__add-btn" type="submit">Добавить</button>
 
             <div class="make__total">
-              <input class="make__input make__input_price" type="hidden"
-                name="price" value="150">
+              <input class="make__input make__input_price" type="hidden" 
+                name="price" value="150"> <!-- для подсчета сумм, скрыли -->
               <p class="make__total_price text-red">150 ₽</p>
               <p class="make__total-size">300мл</p>
             </div>
@@ -302,12 +302,14 @@
     </div>
   </div>
 
-  <div class="modal modal__add">
+  <div class="modal modal_add">
     <div class="modal__main modal__main_make">
       <div class="make">
         <h3 class="make__title">Банановый смузи</h3>
 
         <form class="make__form make__form_add">
+          <input class="make__input-title" type="hidden" name="title"> <!-- для передачи в модалку, скрыли -->
+
           <div class="make__wrap-add">
             <fieldset class="make__fieldset make__fieldset_topping">
               <legend class="make__legend">Дополнительно:</legend>
@@ -331,7 +333,7 @@
               </label>
 
               <label class="make__label radio">
-                <input class="radio__input" type="radio" name="cup" value="Пластиковый">Пластиковый
+                <input class="radio__input" type="radio" checked name="cup" value="Пластиковый">Пластиковый
                 <span>(+0 ₽)</span>
               </label>
             </fieldset>
@@ -341,8 +343,11 @@
             <button class="btn make__add-btn" type="submit">Добавить</button>
 
             <div class="make__total">
+              <input class="make__input-start-price" type="hidden">  <!-- для подсчета сумм, скрыли -->
               <p class="make__total-price text-red">340 ₽</p>
+              <input class="make__input-price " type="hidden" name="price">  <!-- для подсчета сумм, скрыли -->
               <p class="make__total-size">300мл</p>
+              <input class="make__input-size" type="hidden" name="size">  <!-- для подсчета сумм, скрыли -->
             </div>
           </div>
         </form>

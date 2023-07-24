@@ -13,6 +13,25 @@ const price = {
   Пластиковый: 0,
 };
 
+const cardDataControl = {
+  get() {
+    return JSON.parse(localStorage.getItem('freshyBarCard') || '[]');// если в localStorage пусто, то возвращаем '[]' чтобы JSON.parse распарсил массив (обязательно в ковычках)
+  },
+  add() {
+    const cardData = this.get();
+    item.idls = Math.random().toString(36).substring(2, 8); //айдишник придумываем сами
+    cardData.push(item);
+    localStorage.setItem('freshyBarCard', JSON.stringify(cardData)); //отправляем в localStorage данные, приведенные в формат JSON
+  }, 
+  remove() {
+    idls
+
+  },
+  clear() {
+
+  },
+}
+
 //получаем данные с сервера
 const getData = async () => {
   const response = await fetch(`${API_URL}api/goods`);
@@ -70,7 +89,7 @@ const scrollService = {
 }
 
 //функция для открытия/закрытия модальных окон
-const modalController = ({ modal, btnOpen, time = 300 }) => {
+const modalController = ({ modal, btnOpen, time = 300, open, close }) => {
   const buttonElems = document.querySelectorAll(btnOpen);
   const modalElem = document.querySelector(modal);
 
@@ -91,13 +110,20 @@ const modalController = ({ modal, btnOpen, time = 300 }) => {
       setTimeout(() => { //Для плавности закрытия окна
         modalElem.style.visibility = 'hidden';
         scrollService.enabledScroll();
+
+        if (close) { //проверяем есть функция close
+          close(); // есть - тогда вызываем ее
+        }
       }, time);
 
       window.removeEventListener('keydown', closeModal); //чтобы не писало в консоли нажатые кнопки
     };
   };
 
-  const openModal = () => {
+  const openModal = (e) => {
+    if (open) { //проверяем есть функция open
+      open({ btn: e.target }); //есть - тогда вызываем ее и передаем кнопку 
+    }
     modalElem.style.visibility = 'visible';
     modalElem.style.opacity = 1;
     window.addEventListener('keydown', closeModal); //закрытие на кнопку ESC 
@@ -154,12 +180,12 @@ const calculateTotalPrice = (form, startPrice) => {
     totalPrice += price[data.topping] || 0; //делаем тоже что и с массивом, но поиск в data.ingredients
   };
 
-  totalPrice += price[data.cap] || 0; //поиск в радиокнопке
+  totalPrice += price[data.cup] || 0; //поиск в радиокнопке
 
   return totalPrice;
 };
 
-//функция для расчета коктейля 
+//функция для расчета коктейля Составь сам
 const calculatMakeYourOwn = () => {
   const formMakeOwn = document.querySelector('.make__form_make-your-own');
   const makeInputPrice = formMakeOwn.querySelector('.make__input_price');
@@ -176,22 +202,67 @@ const calculatMakeYourOwn = () => {
   hendlerChange();
 };
 
+//калькулятор формы при выборе напитка, возвращает функции
+const calculateAdd = () => {
+  const modalAdd = document.querySelector('.modal_add');
+  const formAdd = document.querySelector('.make__form_add');
+  const makeTitle = modalAdd.querySelector('.make__title');
+  const makeInputTitle = modalAdd.querySelector('.make__input-title');
+  const makeTotalPrice = modalAdd.querySelector('.make__total-price');
+  const makeInputStartPrice = modalAdd.querySelector('.make__input-start-price');
+  const makeInputPrice = modalAdd.querySelector('.make__input-price');
+  const makeTotalSize = modalAdd.querySelector('.make__total-size');
+  const makeInputSize = modalAdd.querySelector('.make__input-size');
+
+  const handlerChange = () => {
+    const totalPrice = calculateTotalPrice(formAdd, +makeInputStartPrice.value);
+    makeInputPrice.value = totalPrice;
+    makeTotalPrice.textContent = `${totalPrice} ₽`;
+  }
+  
+  formAdd.addEventListener('change', handlerChange);
+  
+  //заполнение формы модалки при выборе коктейля
+  const fillInForm = data => {
+    makeTitle.textContent = data.title;
+    makeInputTitle.value = data.title;
+    makeTotalPrice.textContent = `${data.price} ₽`;
+    makeInputStartPrice.value = data.price;
+    makeInputPrice.value = data.price;
+    makeTotalSize.textContent = data.size;
+    makeInputSize.value = data.size;
+    handlerChange();
+  };
+
+  //сброс формы
+  const resetForm = () => {
+    makeTitle.textContent = '';
+    makeTotalPrice.textContent = '';
+    makeTotalSize.textContent = '';
+
+    formAdd.reset();
+  }
+  return { fillInForm, resetForm } //fillInForm-функция заполняет формы, resetForm-функция очищает формы
+}
+
 
 const init = async () => {
+  //определяем кнопку и модальное окно для его отрытия закрытия
   modalController({
     modal: '.modal__order',
     btnOpen: '.header__btn-order'
   });
 
-  calculatMakeYourOwn();
+  calculatMakeYourOwn(); //функция для расчета коктейля Составь сам
 
+   //определяем кнопку и модальное окно для его отрытия закрытия
   modalController({
     modal: '.modal__make-your-own',
     btnOpen: '.cocktail__btn_make',
   });
 
   const goodsListElem = document.querySelector('.goods__list');
-  const data = await getData();
+  const data = await getData(); //получаем данные с сервера
 
   const cardsCocktail = data.map((item) => {
     const li = document.createElement('li');
@@ -201,11 +272,18 @@ const init = async () => {
   });
 
   goodsListElem.append(...cardsCocktail);
+  const { fillInForm, resetForm } = calculateAdd(); //вызываем функцию
 
   modalController({
-    modal: '.modal__add',
+    modal: '.modal_add',
     btnOpen: '.cocktail__btn_add',
-  })
+    open({ btn }) { //перед открытием модалки 
+      const id = btn.dataset.id; //dataset.id хранится карточке товара как data-id="${item.id}"
+      const item = data.find((item) => item.id.toString() === id); //ищем товар item в объекте data- это данные из сервера
+      fillInForm(item); //товар item передаем в форму
+    },
+    close: resetForm, //после закрытия модалки
+  });
 };
 
 init();
