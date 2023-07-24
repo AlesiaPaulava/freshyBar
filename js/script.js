@@ -1,11 +1,26 @@
 const API_URL = 'https://polyester-daffy-authorization.glitch.me/';
 
+const price = {
+  Клубника: 60,
+  Банан: 50,
+  Манго: 70,
+  Киви: 55,
+  Маракуйя: 90,
+  Яблоко: 45,
+  Мята: 50,
+  Лед: 10,
+  Биоразлагаемый: 20,
+  Пластиковый: 0,
+};
+
+//получаем данные с сервера
 const getData = async () => {
   const response = await fetch(`${API_URL}api/goods`);
   const data = await response.json();
   return data;
 };
 
+//создаем карточку товара
 const createCard = (item) => {
   const cocktail = document.createElement('article');
   cocktail.classList.add('cocktail');
@@ -20,14 +35,15 @@ const createCard = (item) => {
         <p class="cocktail__size">${item.size}</p>
       </div>
 
-      <button class="btn cocktail__btn" data-id="${item.id}">Добавить</button>
+      <button class="btn cocktail__btn cocktail__btn_add" data-id="${item.id}">Добавить</button>
     </div>
   `;
   return cocktail;
 }
 
+//блокировка/активация скролла при открытии/закрытии модалки
 const scrollService = {
-  scrollPosition: 0, 
+  scrollPosition: 0,
   disabledScroll() {
     this.scrollPosition = window.scrollY; //определяет текущую позицию
     document.documentElement.style.scrollBehavior = 'auto'; //чтобы при закрытии небыло скочка страницы
@@ -55,7 +71,7 @@ const scrollService = {
 
 //функция для открытия/закрытия модальных окон
 const modalController = ({ modal, btnOpen, time = 300 }) => {
-  const buttonElem = document.querySelector(btnOpen);
+  const buttonElems = document.querySelectorAll(btnOpen);
   const modalElem = document.querySelector(modal);
 
   modalElem.style.cssText = `
@@ -71,7 +87,7 @@ const modalController = ({ modal, btnOpen, time = 300 }) => {
 
     if (target === modalElem || code === 'Escape') {
       modalElem.style.opacity = 0;
-      
+
       setTimeout(() => { //Для плавности закрытия окна
         modalElem.style.visibility = 'hidden';
         scrollService.enabledScroll();
@@ -88,11 +104,78 @@ const modalController = ({ modal, btnOpen, time = 300 }) => {
     scrollService.disabledScroll();
   };
 
-  buttonElem.addEventListener('click', openModal); //открыть модальное окно
-  modalElem.addEventListener('click',closeModal);//закрыть модальное окно
+  buttonElems.forEach((buttonElem) => { //открыть модальные окна
+    buttonElem.addEventListener('click', openModal);
+  });
 
-  return { openModal, closeModal};
+  modalElem.addEventListener('click', closeModal);//закрыть модальное окно
+
+  return { openModal, closeModal };
+};
+
+//достаём данные из формы(модального окна Собери сам)
+const getFormData = (form) => {
+  const formData = new FormData(form);
+  const data = {}; //формируем массив из чекнутых ингридиентов
+
+  for (const [name, value] of formData.entries()) {
+    if (data[name]) {
+      if (!Array.isArray(data[name])) { //проверяет массив это 
+        data[name] = [data[name]] //если не массив, то делает его массивом
+      }
+      data[name].push(value) //добавляет значение
+    } else {
+      data[name] = value;
+    }
+  }
+  return data;
 }
+
+//считает конечную стоимость в модалке Собери сам
+const calculateTotalPrice = (form, startPrice) => {
+  let totalPrice = startPrice;
+
+  const data = getFormData(form); //данные чекнутые в модалке Собери сам
+
+  if (Array.isArray(data.ingredients)) { //проверяем массив ли
+    data.ingredients.forEach(item => { //если массив, то перебираем его
+      totalPrice += price[item] || 0; //найти в price например Клубника, её стоимость и добавь  в totalPrice
+    })
+  } else { //если не массив
+    totalPrice += price[data.ingredients] || 0; //делаем тоже что и с массивом, но поиск в data.ingredients
+  };
+
+  //с чекбоксами проверка и добавление в  totalPrice
+  if (Array.isArray(data.topping)) { //проверяем массив ли
+    data.topping.forEach(item => { //если массив, то перебираем его
+      totalPrice += price[item] || 0; //найти в price например Клубника, её стоимость и добавь  в totalPrice
+    })
+  } else { //если не массив
+    totalPrice += price[data.topping] || 0; //делаем тоже что и с массивом, но поиск в data.ingredients
+  };
+
+  totalPrice += price[data.cap] || 0; //поиск в радиокнопке
+
+  return totalPrice;
+};
+
+//функция для расчета коктейля 
+const calculatMakeYourOwn = () => {
+  const formMakeOwn = document.querySelector('.make__form_make-your-own');
+  const makeInputPrice = formMakeOwn.querySelector('.make__input_price');
+  const makeTotalPrice = formMakeOwn.querySelector('.make__total_price');
+
+  //когда меняется в окне отметки(чекбоксы), функция срабатывает
+  const hendlerChange = () => {
+    const totalPrice = calculateTotalPrice(formMakeOwn, 150);
+    makeInputPrice.value = totalPrice;
+    makeTotalPrice.textContent = `${totalPrice} ₽`;
+  };
+
+  formMakeOwn.addEventListener('change', hendlerChange);
+  hendlerChange();
+};
+
 
 const init = async () => {
   modalController({
@@ -100,8 +183,10 @@ const init = async () => {
     btnOpen: '.header__btn-order'
   });
 
-  modalController({ 
-    modal: '.modal__make',
+  calculatMakeYourOwn();
+
+  modalController({
+    modal: '.modal__make-your-own',
     btnOpen: '.cocktail__btn_make',
   });
 
@@ -116,6 +201,11 @@ const init = async () => {
   });
 
   goodsListElem.append(...cardsCocktail);
+
+  modalController({
+    modal: '.modal__add',
+    btnOpen: '.cocktail__btn_add',
+  })
 };
 
 init();
