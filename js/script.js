@@ -13,24 +13,33 @@ const price = {
   Пластиковый: 0,
 };
 
+//объект с методами
 const cardDataControl = {
+  //получить данные из корзины
   get() {
     return JSON.parse(localStorage.getItem('freshyBarCard') || '[]');// если в localStorage пусто, то возвращаем '[]' чтобы JSON.parse распарсил массив (обязательно в ковычках)
   },
-  add() {
+  //добавить в корзину
+  add(item) {
     const cardData = this.get();
     item.idls = Math.random().toString(36).substring(2, 8); //айдишник придумываем сами
     cardData.push(item);
     localStorage.setItem('freshyBarCard', JSON.stringify(cardData)); //отправляем в localStorage данные, приведенные в формат JSON
-  }, 
-  remove() {
-    idls
-
   },
+  //удалить из корзины 
+  remove(idls) {
+    const cardData = this.get(); //получаем данные
+    const index = card.findIndex((item) => item.idls === idls); //findIndex находит элемент с id и возвращает
+    if (index !== -1) { //если не находит index, то возвращает -1
+      cardData.splice(index, 1)
+    }
+    localStorage.setItem('freshyBarCard', JSON.stringify(cardData));
+  },
+  //очистить
   clear() {
-
+    localStorage.removeItem('freshyBarCard'); //очистка при отправке
   },
-}
+};
 
 //получаем данные с сервера
 const getData = async () => {
@@ -104,7 +113,7 @@ const modalController = ({ modal, btnOpen, time = 300, open, close }) => {
     const target = event.target; //чтобы окно не закрывалось при клике на него
     const code = event.code; //для закрытия окна по ESC
 
-    if (target === modalElem || code === 'Escape') {
+    if (event === 'close' || target === modalElem || code === 'Escape') { //для закрытия модалки после отправки event  === 'close', это значит, что event может быть строкой и принудительно его закрываем 
       modalElem.style.opacity = 0;
 
       setTimeout(() => { //Для плавности закрытия окна
@@ -135,6 +144,10 @@ const modalController = ({ modal, btnOpen, time = 300, open, close }) => {
   });
 
   modalElem.addEventListener('click', closeModal);//закрыть модальное окно
+
+
+  modalElem.closeModal = closeModal; //добавляем метод closeModal
+  modalElem.openModal = openModal;//добавляем метод openModal
 
   return { openModal, closeModal };
 };
@@ -185,21 +198,62 @@ const calculateTotalPrice = (form, startPrice) => {
   return totalPrice;
 };
 
+//для добавление в localStorage
+const formControl = (form, cb) => {
+  form.addEventListener('submit', (e) => { //oтправка формы
+    e.preventDefault(); //чтобы не перезагружалась страница
+
+    const data = getFormData(form);//данные из getData
+    cardDataControl.add(data); //добавляем данные в корзину
+
+    if (cb) { //проверяем есть ли колбэк-функция
+      cb(); //если есть, то вызываем ее
+    }
+  })
+}
+
 //функция для расчета коктейля Составь сам
 const calculatMakeYourOwn = () => {
-  const formMakeOwn = document.querySelector('.make__form_make-your-own');
-  const makeInputPrice = formMakeOwn.querySelector('.make__input_price');
-  const makeTotalPrice = formMakeOwn.querySelector('.make__total_price');
+  const modalMakeOwn = document.querySelector('.modal__make-your-own');
+  const formMakeOwn = modalMakeOwn.querySelector('.make__form_make-your-own');
+  const makeInputTitle = modalMakeOwn.querySelector('.make__input-title');
+  const makeInputPrice = modalMakeOwn.querySelector('.make__input_price');
+  const makeTotalPrice = modalMakeOwn.querySelector('.make__total_price');
+  const makeAddBtn = modalMakeOwn.querySelector('.make__add-btn');
 
   //когда меняется в окне отметки(чекбоксы), функция срабатывает
   const hendlerChange = () => {
     const totalPrice = calculateTotalPrice(formMakeOwn, 150);
+    //для изменения заголовка
+    const data = getFormData(formMakeOwn); //получаем данные
+    if (data.ingredients) { //если в данных есть ингридиенты,то 
+      const ingredients = Array.isArray(data.ingredients) //получаем в виде строки ингридиенты, если там массив
+      ? data.ingredients.join(', ')//то раскладываем через запятую
+      : data.ingredients; //если нет, то просто вернем ингридиент
+
+      makeInputTitle.value = `Конструктор: ${ingredients}`; //в инпут записываем
+      makeAddBtn.disabled = false;//кнопка активна
+    } else {
+      makeAddBtn.disabled = true;//кнопка не активна
+    }
+
     makeInputPrice.value = totalPrice;
     makeTotalPrice.textContent = `${totalPrice} ₽`;
   };
 
   formMakeOwn.addEventListener('change', hendlerChange);
+  formControl(formMakeOwn, () => {
+    modalMakeOwn.closeModal('close'); //close добавили, так как на строке 116 event === 'close'
+  }); //для добавление в localStorage + cb колбек-функция для закрытия модалки
   hendlerChange();
+
+  //очистка формы после отпраки
+  const resetForm = () => {
+    makeTotalPrice.textContent = '';
+    makeAddBtn.disabled = true;
+    formMakeOwn.reset();
+  }
+  return { resetForm };
 };
 
 //калькулятор формы при выборе напитка, возвращает функции
@@ -221,6 +275,9 @@ const calculateAdd = () => {
   }
   
   formAdd.addEventListener('change', handlerChange);
+  formControl(formAdd, () => {
+    modalAdd.closeModal('close');
+  })
   
   //заполнение формы модалки при выборе коктейля
   const fillInForm = data => {
@@ -253,12 +310,13 @@ const init = async () => {
     btnOpen: '.header__btn-order'
   });
 
-  calculatMakeYourOwn(); //функция для расчета коктейля Составь сам
+  const { resetForm: resetFormMakeYourOwn }= calculatMakeYourOwn(); //функция для расчета коктейля Составь сам, resetFormMakeYourOwn добавлено,т.к. название resetForm уже существует
 
    //определяем кнопку и модальное окно для его отрытия закрытия
   modalController({
     modal: '.modal__make-your-own',
     btnOpen: '.cocktail__btn_make',
+    close: resetFormMakeYourOwn,//закрытие после отправки формы в корзину
   });
 
   const goodsListElem = document.querySelector('.goods__list');
@@ -272,7 +330,7 @@ const init = async () => {
   });
 
   goodsListElem.append(...cardsCocktail);
-  const { fillInForm, resetForm } = calculateAdd(); //вызываем функцию
+  const { fillInForm: fillInFormAdd, resetForm: resetFormAdd } = calculateAdd(); //вызываем функцию, fillInForm: fillInFormAdd - это переименование функции
 
   modalController({
     modal: '.modal_add',
@@ -280,9 +338,9 @@ const init = async () => {
     open({ btn }) { //перед открытием модалки 
       const id = btn.dataset.id; //dataset.id хранится карточке товара как data-id="${item.id}"
       const item = data.find((item) => item.id.toString() === id); //ищем товар item в объекте data- это данные из сервера
-      fillInForm(item); //товар item передаем в форму
+      fillInFormAdd(item); //товар item передаем в форму
     },
-    close: resetForm, //после закрытия модалки
+    close: resetFormAdd, //после закрытия модалки
   });
 };
 
