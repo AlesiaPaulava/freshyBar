@@ -35,7 +35,7 @@
 
   <main>
     <section class="hero">
-      <div class="container">
+      <div class="container hero__container">
         <h2 class="hero__title">Выбери свой
           <span class="text-red">освежающий</span> фреш
         </h2>
@@ -51,6 +51,15 @@
           <div class="hero__cup hero__cup_green">
             <img src="img/orange.png" alt="Стакан с оранжевым коктейлем" class="hero__img">
           </div>
+        </div>
+
+        <div class="decor">
+          <div class="decor__img decor__img_01"></div>
+          <div class="decor__img decor__img_02"></div>
+          <div class="decor__img decor__img_03"></div>
+          <div class="decor__img decor__img_04"></div>
+          <div class="decor__img decor__img_05"></div>
+          <div class="decor__img decor__img_06"></div>
         </div>
       </div>
     </section>
@@ -105,41 +114,7 @@
         <h2 class="order__title">Корзина<sup class="text-red order__count">(2)</sup></h2>
 
         <ul class="order__list">
-          <li class="order__item">
-            <img class="order__img" src="img/make_your_own.jpg" alt="Название коктейля">
 
-            <div class="order__info">
-              <h3 class="order__name">Маного смузи</h3>
-
-              <ul class="order__topping-list">
-                <li class="order__topping-item">300мл</li>
-                <li class="order__topping-item">Биоразлагаемый стакан</li>
-                <li class="order__topping-item">Лед</li>
-                <li class="order__topping-item">Мята</li>
-              </ul>
-            </div>
-
-            <button class="order__item-delet" aria-label="Удалить коктейль из корзины"></button>
-
-            <p class="order__item-price">380&nbsp;₽</p>
-          </li>
-
-          <li class="order__item">
-            <img class="order__img" src="img/make_your_own.jpg" alt="Название коктейля">
-
-            <div class="order__info">
-              <h3 class="order__name">Конструктор: Банан, яблоко, киви</h3>
-
-              <ul class="order__topping-list">
-                <li class="order__topping-item">300мл</li>
-                <li class="order__topping-item">Биоразлагаемый стакан</li>
-              </ul>
-            </div>
-
-            <button class="order__item-delet" aria-label="Удалить коктейль из корзины"></button>
-
-            <p class="order__item-price">380&nbsp;₽</p>
-          </li>
         </ul>
 
         <div class="order__price">
@@ -150,11 +125,11 @@
 
         <form class="order__form">
           <label class="order__label">
-            <input type="text" class="order__input" placeholder="Ваше имя">
+            <input type="text" required class="order__input" name="name" placeholder="Ваше имя">
           </label>
 
           <label class="order__label">
-            <input type="text" class="order__input" placeholder="Телефон">
+            <input type="text" required class="order__input" name="phone" placeholder="Телефон">
           </label>
 
           <button class="order__submit btn">Заказать</button>
@@ -228,76 +203,14 @@
             <button class="btn make__add-btn" type="submit">Добавить</button>
 
             <div class="make__total">
-              <input class="make__input make__input_price" type="hidden" 
-                name="price" value="150"> <!-- для подсчета сумм, скрыли -->
+              <input class="make__input make__input_price" type="hidden" name="price" value="150">
+              <!-- для подсчета сумм, скрыли -->
               <p class="make__total_price text-red">150 ₽</p>
+              <input class="make__input make__input_size" type="hidden" name="size" value="300">
+              <!-- для подсчета сумм, скрыли -->
               <p class="make__total-size">300мл</p>
             </div>
           </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal modal__order">
-    <div class="modal__main modal__main_order">
-      <div class="order">
-        <h2 class="order__title">Корзина<sup class="text-red order__count">(2)</sup></h2>
-
-        <ul class="order__list">
-          <li class="order__item">
-            <img class="order__img" src="img/make_your_own.jpg" alt="Название коктейля">
-
-            <div class="order__info">
-              <h3 class="order__name">Маного смузи</h3>
-
-              <ul class="order__topping-list">
-                <li class="order__topping-item">300мл</li>
-                <li class="order__topping-item">Биоразлагаемый стакан</li>
-                <li class="order__topping-item">Лед</li>
-                <li class="order__topping-item">Мята</li>
-              </ul>
-            </div>
-
-            <button class="order__item-delet" aria-label="Удалить коктейль из корзины"></button>
-
-            <p class="order__item-price">380&nbsp;₽</p>
-          </li>
-
-          <li class="order__item">
-            <img class="order__img" src="img/make_your_own.jpg" alt="Название коктейля">
-
-            <div class="order__info">
-              <h3 class="order__name">Конструктор: Банан, яблоко, киви</h3>
-
-              <ul class="order__topping-list">
-                <li class="order__topping-item">300мл</li>
-                <li class="order__topping-item">Биоразлагаемый стакан</li>
-              </ul>
-            </div>
-
-            <button class="order__item-delet" aria-label="Удалить коктейль из корзины"></button>
-
-            <p class="order__item-price">380&nbsp;₽</p>
-          </li>
-        </ul>
-
-        <div class="order__price">
-          <p class="order__price-title">Итого:</p>
-
-          <p class="order__total-price text-red">950&nbsp;₽</p>
-        </div>
-
-        <form class="order__form">
-          <label class="order__label">
-            <input type="text" class="order__input" placeholder="Ваше имя">
-          </label>
-
-          <label class="order__label">
-            <input type="text" class="order__input" placeholder="Телефон">
-          </label>
-
-          <button class="order__submit btn">Заказать</button>
         </form>
       </div>
     </div>
@@ -344,11 +257,11 @@
             <button class="btn make__add-btn" type="submit">Добавить</button>
 
             <div class="make__total">
-              <input class="make__input-start-price" type="hidden">  <!-- для подсчета сумм, скрыли -->
+              <input class="make__input-start-price" type="hidden"> <!-- для подсчета сумм, скрыли -->
               <p class="make__total-price text-red">340 ₽</p>
-              <input class="make__input-price " type="hidden" name="price">  <!-- для подсчета сумм, скрыли -->
+              <input class="make__input-price " type="hidden" name="price"> <!-- для подсчета сумм, скрыли -->
               <p class="make__total-size">300мл</p>
-              <input class="make__input-size" type="hidden" name="size">  <!-- для подсчета сумм, скрыли -->
+              <input class="make__input-size" type="hidden" name="size"> <!-- для подсчета сумм, скрыли -->
             </div>
           </div>
         </form>

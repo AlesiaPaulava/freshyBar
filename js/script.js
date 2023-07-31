@@ -228,8 +228,8 @@ const calculatMakeYourOwn = () => {
     const data = getFormData(formMakeOwn); //получаем данные
     if (data.ingredients) { //если в данных есть ингридиенты,то 
       const ingredients = Array.isArray(data.ingredients) //получаем в виде строки ингридиенты, если там массив
-      ? data.ingredients.join(', ')//то раскладываем через запятую
-      : data.ingredients; //если нет, то просто вернем ингридиент
+        ? data.ingredients.join(', ')//то раскладываем через запятую
+        : data.ingredients; //если нет, то просто вернем ингридиент
 
       makeInputTitle.value = `Конструктор: ${ingredients}`; //в инпут записываем
       makeAddBtn.disabled = false;//кнопка активна
@@ -273,12 +273,12 @@ const calculateAdd = () => {
     makeInputPrice.value = totalPrice;
     makeTotalPrice.textContent = `${totalPrice} ₽`;
   }
-  
+
   formAdd.addEventListener('change', handlerChange);
   formControl(formAdd, () => {
     modalAdd.closeModal('close');
   })
-  
+
   //заполнение формы модалки при выборе коктейля
   const fillInForm = data => {
     makeTitle.textContent = data.title;
@@ -302,26 +302,111 @@ const calculateAdd = () => {
   return { fillInForm, resetForm } //fillInForm-функция заполняет формы, resetForm-функция очищает формы
 }
 
+//создаем элементы списка в корзине в который будут помещаться карточки c заказом
+const createCartItem = (item) => {
+  const li = document.createElement('li');
+  li.classList.add('order__item');
+  li.innerHTML = `
+    <img class="order__img" src="img/make_your_own.jpg" alt="${item.title}">
+    <div class="order__info">
+      <h3 class="order__name">${item.title}</h3>
+
+      <ul class="order__topping-list">
+        <li class="order__topping-item">${item.size}</li>
+        <li class="order__topping-item">${item.cup}</li>
+        ${item.topping
+      ? Array.isArray(item.topping) //если item.topping есть проверяем массив ли он
+        ? item.topping.map(
+          (topping) =>
+            `<li class="order__topping-item">${topping}</li>`)//если массив, то получаем каждый item
+        : `<li class="order__topping-item">${item.topping}</li>`
+      : ''
+        }
+      </ul>
+    </div>
+
+    <button class="order__item-delet" data-idls="${item.idls}"
+      aria-label="Удалить коктейль из корзины"></button>
+
+    <p class="order__item-price">${item.price}&nbsp;₽</p>
+  `;
+  return li;
+}
+
+//отрисовка карточек в корзине
+const renderCart = () => {
+  const modalOrder = document.querySelector('.modal__order');
+
+  const orderCount = modalOrder.querySelector('.order__count');
+  const orderList = modalOrder.querySelector('.order__list');
+  const orderTotalPrice = modalOrder.querySelector('.order__total-price');
+  const orderForm = modalOrder.querySelector('.order__form');
+
+  const orderListData = cardDataControl.get(); //получаем данные из localStorage
+
+  orderList.textContent = ''; //очищаем список
+  orderCount.textContent = `(${orderListData.length})`; //будет указана длинна списка
+
+  //определяем каждую карточку из localStorage и вставляем их в список 
+  orderListData.forEach(item => {
+    orderList.append(createCartItem(item));
+  });
+
+  orderTotalPrice.textContent =
+    `${orderListData.reduce((acc, item) => acc + +item.price, 0,)} ₽`;
+
+  //событие отправки на сервер корзины
+  orderForm.addEventListener('submit', async (e) => {
+    e.preventDefault(); //чтобы не перезагружалась страница при отправке
+    if (!orderListData.length) { //если корзина пустая
+      return alert ('Корзина пустая!');
+    }
+
+    const data = getFormData(orderForm); //
+    //отправняем на сервер
+    const response = await fetch (`${API_URL}api/order`, {
+      method: 'POST',
+      body: JSON.stringify({ //отправка в формате JSON
+        ...data, //отправляем всё, что является data - это name phone
+        products: orderListData,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const {message} = await response.json();// получаем с сервера и вытаскиваем из json
+    alert(message);
+    cardDataControl.clear();//очищаем localStorage
+    orderForm.reset();//очищаем корзину
+    modalOrder.closeModal('close');//закрываем модалку с корзиной
+    
+  });
+
+};
 
 const init = async () => {
   //определяем кнопку и модальное окно для его отрытия закрытия
   modalController({
     modal: '.modal__order',
-    btnOpen: '.header__btn-order'
+    btnOpen: '.header__btn-order',
+    open: renderCart, //функция срабатывает перед открытием корзины
   });
 
-  const { resetForm: resetFormMakeYourOwn }= calculatMakeYourOwn(); //функция для расчета коктейля Составь сам, resetFormMakeYourOwn добавлено,т.к. название resetForm уже существует
+  const { resetForm: resetFormMakeYourOwn } = calculatMakeYourOwn(); //функция для расчета коктейля Составь сам, resetFormMakeYourOwn добавлено,т.к. название resetForm уже существует
 
-   //определяем кнопку и модальное окно для его отрытия закрытия
+  //определяем кнопку и модальное окно для его отрытия закрытия
   modalController({
     modal: '.modal__make-your-own',
     btnOpen: '.cocktail__btn_make',
     close: resetFormMakeYourOwn,//закрытие после отправки формы в корзину
   });
 
+  //находим спиисок для размещения в нем карточек
   const goodsListElem = document.querySelector('.goods__list');
   const data = await getData(); //получаем данные с сервера
 
+  //создание элемента списка для карточки
   const cardsCocktail = data.map((item) => {
     const li = document.createElement('li');
     li.classList.add('goods__item');
@@ -329,7 +414,7 @@ const init = async () => {
     return li;
   });
 
-  goodsListElem.append(...cardsCocktail);
+  goodsListElem.append(...cardsCocktail); //помецаем карточки в список
   const { fillInForm: fillInFormAdd, resetForm: resetFormAdd } = calculateAdd(); //вызываем функцию, fillInForm: fillInFormAdd - это переименование функции
 
   modalController({
