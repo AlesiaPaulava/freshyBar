@@ -6,12 +6,12 @@ export const getFormData = (form) => {
   for (const [name, value] of formData.entries()) { //проходимся по всем элементам в formData. Каждый элемент это пара ключ-значение
     if (data[name]) { //проверяем существует ли name в объекте data
       if (!Array.isArray(data[name])) { //проверяет массив это 
-        data[name] = [data[name]] //если не массив, то делает его массивом
+        data[name] = [data[name]]; //если не массив, то делает его массивом
       }
-      data[name].push(value) //добавляет значение
+      data[name].push(value); //добавляет значение
     } else {
       data[name] = value;//если name не существует, то создаем свойство с именем name в объекте data
     }
   }
   return data;
-}
+};

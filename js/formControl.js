@@ -4,8 +4,8 @@ import { getFormData } from "./getFormData.js";
 
 
 //для добавление в localStorage
-export const formControl = (form, cb) => {
-  form.addEventListener('submit', (e) => { //oтправка формы
+export const formSubmit = (form, cb) => {
+  form.addEventListener("submit", (e) => { //oтправка формы
     e.preventDefault(); //чтобы не перезагружалась страница
 
     const data = getFormData(form);//данные из getData
@@ -24,21 +24,21 @@ export const calculateTotalPrice = (form, startPrice) => {
   const data = getFormData(form); //данные чекнутые в модалке Собери сам
 
   if (Array.isArray(data.ingredients)) { //проверяем массив ли
-    data.ingredients.forEach(item => { //если массив, то перебираем его
+    data.ingredients.forEach((item) => { //если массив, то перебираем его
       totalPrice += price[item] || 0; //найти в price например Клубника, её стоимость и добавь  в totalPrice
-    })
+    });
   } else { //если не массив
     totalPrice += price[data.ingredients] || 0; //делаем тоже что и с массивом, но поиск в data.ingredients
-  };
+  }
 
   //с чекбоксами проверка и добавление в  totalPrice
   if (Array.isArray(data.topping)) { //проверяем массив ли
-    data.topping.forEach(item => { //если массив, то перебираем его
+    data.topping.forEach((item) => { //если массив, то перебираем его
       totalPrice += price[item] || 0; //найти в price например Клубника, её стоимость и добавь  в totalPrice
-    })
+    });
   } else { //если не массив
     totalPrice += price[data.topping] || 0; //делаем тоже что и с массивом, но поиск в data.ingredients
-  };
+  }
 
   totalPrice += price[data.cup] || 0; //поиск в радиокнопке
 
@@ -47,7 +47,7 @@ export const calculateTotalPrice = (form, startPrice) => {
 
 
 //функция для расчета коктейля Составь сам
-export const calculatMakeYourOwn = () => {
+export const calculateMakeYourOwn = () => {
   const modalMakeOwn = document.querySelector('.modal__make-your-own');
   const formMakeOwn = modalMakeOwn.querySelector('.make__form_make-your-own');
   const makeInputTitle = modalMakeOwn.querySelector('.make__input-title');
@@ -56,17 +56,17 @@ export const calculatMakeYourOwn = () => {
   const makeAddBtn = modalMakeOwn.querySelector('.make__add-btn');
 
   //когда меняется в окне отметки(чекбоксы), функция срабатывает
-  const hendlerChange = () => {
+  const handlerChange = () => {
     const totalPrice = calculateTotalPrice(formMakeOwn, 150);
     //для изменения заголовка
     const data = getFormData(formMakeOwn); //получаем данные
     if (data.ingredients) { //если в данных есть ингридиенты,то 
       const ingredients = Array.isArray(data.ingredients) //получаем в виде строки ингридиенты, если там массив
-        ? data.ingredients.join(', ')//то раскладываем через запятую
+        ? data.ingredients.join(", ")//то раскладываем через запятую
         : data.ingredients; //если нет, то просто вернем ингридиент
 
-      makeInputTitle.value = `Конструктор: ${ingredients}`; //в инпут записываем
-      makeAddBtn.disabled = false;//кнопка активна
+        makeInputTitle.value = `Конструктор: ${ingredients}`; //в инпут записываем
+        makeAddBtn.disabled = false;//кнопка активна
     } else {
       makeAddBtn.disabled = true;//кнопка не активна
     }
@@ -75,11 +75,11 @@ export const calculatMakeYourOwn = () => {
     makeTotalPrice.textContent = `${totalPrice} ₽`;
   };
 
-  formMakeOwn.addEventListener('change', hendlerChange);
-  formControl(formMakeOwn, () => {
+  formMakeOwn.addEventListener("change", handlerChange);
+  formSubmit(formMakeOwn, () => {
     modalMakeOwn.closeModal('close'); //close добавили, так как на строке 116 event === 'close'
   }); //для добавление в localStorage + cb колбек-функция для закрытия модалки
-  hendlerChange();
+  handlerChange();
 
   //очистка формы после отпраки
   const resetForm = () => {
@@ -96,9 +96,9 @@ export const calculateAdd = () => {
   const formAdd = document.querySelector('.make__form_add');
   const makeTitle = modalAdd.querySelector('.make__title');
   const makeInputTitle = modalAdd.querySelector('.make__input-title');
-  const makeTotalPrice = modalAdd.querySelector('.make__total-price');
+  const makeTotalPrice = modalAdd.querySelector('.make__total_price');
   const makeInputStartPrice = modalAdd.querySelector('.make__input-start-price');
-  const makeInputPrice = modalAdd.querySelector('.make__input-price');
+  const makeInputPrice = modalAdd.querySelector('.make__input_price');
   const makeTotalSize = modalAdd.querySelector('.make__total-size');
   const makeInputSize = modalAdd.querySelector('.make__input-size');
 
@@ -109,7 +109,7 @@ export const calculateAdd = () => {
   };
 
   formAdd.addEventListener('change', handlerChange);
-  formControl(formAdd, () => {
+  formSubmit(formAdd, () => {
     modalAdd.closeModal('close');
   });
 

@@ -53,7 +53,7 @@ const createCartItem = (item, data) => {
   const li = document.createElement('li');
   li.classList.add('order__item');
   li.innerHTML = `
-  <img class="order__img" src="${img ? `${API_URL}${img}` : "img/make-your-own.jpg"
+    <img class="order__img" src="${img ? `${API_URL}${img}` : "img/make-your-own.jpg"
     }"
     alt="${item.title}">
 
@@ -78,11 +78,12 @@ const createCartItem = (item, data) => {
       </ul>
     </div>
 
-    <button class="order__item-delet" data-idls="${item.idls}"
-      aria-label="Удалить коктейль из корзины"></button>
+    <button class="order__item-delete" data-idls="${item.idls}"
+    aria-label="Удалить коктейл из корзины"></button>
 
-    <p class="order__item-price">${item.price}&nbsp;₽</p>
-  `;
+  <p class="order__item-price">${item.price}&nbsp;₽</p>
+ `;
+
   return li;
 };
 
@@ -94,12 +95,14 @@ const renderCartList = (data) => {
   orderCount.textContent = `(${orderListData.length})`; //будет указана длинна списка
 
   //определяем каждую карточку из localStorage и вставляем их в список 
-  orderListData.forEach(item => {
+  orderListData.forEach((item) => {
     orderList.append(createCartItem(item, data));
   });
 
-  orderTotalPrice.textContent =
-    `${orderListData.reduce((acc, item) => acc + +item.price, 0,)} ₽`;
+  orderTotalPrice.textContent = `${orderListData.reduce(
+    (acc, item) => acc + +item.price,
+    0,
+  )} ₽`;
 };
 
 //функция обрабатывает событие отправки формы
