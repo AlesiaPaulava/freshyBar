@@ -99,8 +99,8 @@ export const calculateAdd = () => {
   const makeTotalPrice = modalAdd.querySelector('.make__total_price');
   const makeInputStartPrice = modalAdd.querySelector('.make__input-start-price');
   const makeInputPrice = modalAdd.querySelector('.make__input_price');
-  const makeTotalSize = modalAdd.querySelector('.make__total-size');
-  const makeInputSize = modalAdd.querySelector('.make__input-size');
+  const makeTotalSize = modalAdd.querySelector('.make__total_size');
+  const makeInputSize = modalAdd.querySelector('.make__input_size');
 
   const handlerChange = () => {
     const totalPrice = calculateTotalPrice(formAdd, +makeInputStartPrice.value);
