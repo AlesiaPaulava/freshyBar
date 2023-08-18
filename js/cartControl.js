@@ -12,7 +12,7 @@ const orderForm = modalOrder.querySelector('.order__form');
 export const cartDataControl = {
   //получить данные из корзины
   get() {
-    return JSON.parse(localStorage.getItem('freshyBarCard') || '[]');// если в localStorage пусто, то возвращаем '[]' чтобы JSON.parse распарсил массив (обязательно в ковычках)
+    return JSON.parse(localStorage.getItem('freshyBarCart') || '[]');// если в localStorage пусто, то возвращаем '[]' чтобы JSON.parse распарсил массив (обязательно в ковычках)
   },
   //добавить в корзину
   add(item) {

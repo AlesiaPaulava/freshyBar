@@ -510,7 +510,7 @@ fieldset {
   margin-bottom: 0;
 }
 
-.order__item-delet {
+.order__item-delete {
   grid-area: delete;
   width: 24px;
   height: 24px;
